@@ -4,8 +4,8 @@ import os
 from fastapi.middleware.cors import CORSMiddleware
 
 # === КОНФИГУРАЦИЯ ===
-TELEGRAM_BOT_TOKEN = os.getenv("BOT_TOKEN") or "твой_токен_бота"
-TELEGRAM_GROUP_ID = os.getenv("GROUP_ID") or "-1001234567890"  # Вставь сюда ID группы
+TELEGRAM_BOT_TOKEN = os.getenv("BOT_TOKEN") or "7653674144:AAFX3gWFCkx0ccRd6FSqLzxdz9EW-7Ryswo"
+TELEGRAM_GROUP_ID = os.getenv("GROUP_ID") or "-4838776063"  # Вставь сюда ID группы
 API_URL = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
 
 # === ИНИЦИАЛИЗАЦИЯ ===
