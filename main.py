@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import requests, os, json
 
@@ -51,3 +51,10 @@ def update_products(products: list):
         return {"message": "Товары обновлены"}
     except Exception:
         raise HTTPException(status_code=500, detail="Не удалось сохранить товары")
+
+def get_products():
+    try:
+        with open(PRODUCTS_FILE, "r", encoding="utf-8") as file:
+            return json.load(file)
+    except Exception:
+        raise HTTPException(status_code=500, detail="Не удалось загрузить товары")
