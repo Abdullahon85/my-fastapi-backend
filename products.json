@@ -5,7 +5,7 @@
     "price": 300,
     "stock": 50,
     "discountPercentage": 0,
-    "thumbnail": "https://placehold.co/150x150"
+    "thumbnail": "https://placehold.co/150x150.jpg"
   },
   {
     "title": "Ноутбук HP",
@@ -13,6 +13,6 @@
     "price": 800,
     "stock": 15,
     "discountPercentage": 5,
-    "thumbnail": "https://placehold.co/150x150"
+    "thumbnail": "https://placehold.co/150x150.jpg"
   }
 ]
