@@ -14,5 +14,29 @@
     "stock": 15,
     "discountPercentage": 5,
     "thumbnail": "https://placehold.co/150x150.jpg"
+  },
+  {
+    "title": "Планшет Samsung",
+    "brand": "Samsung",
+    "price": 500,
+    "stock": 30,
+    "discountPercentage": 0,
+    "thumbnail": "https://placehold.co/150x150.jpg"
+  },
+  {
+    "title": "Телевизор Sony",
+    "brand": "Sony",
+    "price": 1000,
+    "stock": 10,
+    "discountPercentage": 10,
+    "thumbnail": "https://placehold.co/150x150.jpg"
+  },
+  {
+    "title": "Компьютер Dell",
+    "brand": "Dell",
+    "price": 1200,
+    "stock": 20,
+    "discountPercentage": 0,
+    "thumbnail": "https://placehold.co/150x150.jpg"
   }
 ]

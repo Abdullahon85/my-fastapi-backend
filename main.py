@@ -25,6 +25,9 @@ async def send_order(request: Request):
     address = data.get("address")
     cart = data.get("cart")
 
+    if not all([name, phone, address, cart]):
+        raise HTTPException(status_code=400, detail="Не все поля заполнены")
+
     text = f"📦 Новый заказ\n\n👤 Имя: {name}\n📞 Телефон: {phone}\n📍 Адрес: {address}\n🛒 Товары:\n"
     for item in cart:
         text += f"• {item.get('title')} x {item.get('amount')}\n"
@@ -34,9 +37,10 @@ async def send_order(request: Request):
         requests.post(API_URL, json=payload)
         return {"status": "ok"}
     except Exception as e:
-        return {"error": str(e)}
+        raise HTTPException(status_code=500, detail=f"Ошибка отправки Telegram: {str(e)}")
 
-def get_products():
+@app.get("/api/products")
+def read_products():
     try:
         with open(PRODUCTS_FILE, "r", encoding="utf-8") as file:
             return json.load(file)
@@ -51,10 +55,3 @@ def update_products(products: list):
         return {"message": "Товары обновлены"}
     except Exception:
         raise HTTPException(status_code=500, detail="Не удалось сохранить товары")
-
-def get_products():
-    try:
-        with open(PRODUCTS_FILE, "r", encoding="utf-8") as file:
-            return json.load(file)
-    except Exception:
-        raise HTTPException(status_code=500, detail="Не удалось загрузить товары")
