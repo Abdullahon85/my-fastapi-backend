@@ -1,42 +1,37 @@
 [
   {
+    "id": 1,
     "title": "Смартфон Xiaomi",
-    "brand": "Xiaomi",
     "price": 300,
-    "stock": 50,
-    "discountPercentage": 0,
-    "thumbnail": "https://placehold.co/150x150.jpg"
+    "image": "https://placehold.co/150x150.jpg",
+    "discountPercentage": 20
   },
   {
+    "id": 2,
     "title": "Ноутбук HP",
-    "brand": "HP",
     "price": 800,
-    "stock": 15,
-    "discountPercentage": 5,
-    "thumbnail": "https://placehold.co/150x150.jpg"
+    "image": "https://placehold.co/150x150.jpg",
+    "discountPercentage": 10
   },
   {
+    "id": 3,
     "title": "Планшет Samsung",
-    "brand": "Samsung",
     "price": 500,
-    "stock": 30,
-    "discountPercentage": 0,
-    "thumbnail": "https://placehold.co/150x150.jpg"
+    "image": "https://placehold.co/150x150.jpg",
+    "discountPercentage": 5
   },
   {
+    "id": 4,
     "title": "Телевизор Sony",
-    "brand": "Sony",
     "price": 1000,
-    "stock": 10,
-    "discountPercentage": 10,
-    "thumbnail": "https://placehold.co/150x150.jpg"
+    "image": "https://placehold.co/150x150.jpg",
+    "discountPercentage": 10
   },
   {
+    "id": 5,
     "title": "Компьютер Dell",
-    "brand": "Dell",
     "price": 1200,
-    "stock": 20,
-    "discountPercentage": 0,
-    "thumbnail": "https://placehold.co/150x150.jpg"
+    "image": "https://placehold.co/150x150.jpg",
+    "discountPercentage": 10
   }
 ]
