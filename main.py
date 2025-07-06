@@ -8,7 +8,7 @@ import os
 
 # === КОНФИГУРАЦИЯ ===
 PRODUCTS_FILE = "products.json"
-TELEGRAM_BOT_TOKEN = os.getenv("BOT_TOKEN") or "твой_токен"
+TELEGRAM_BOT_TOKEN = os.getenv("BOT_TOKEN") or "7653674144:AAFX3gWFCkx0ccRd6FSqLzxdz9EW-7Ryswo"
 TELEGRAM_GROUP_ID = os.getenv("GROUP_ID") or "-1001234567890"
 API_URL = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
 
