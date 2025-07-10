@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, HTTPException, Body
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import List
@@ -23,17 +23,16 @@ if not BOT_TOKEN or not GROUP_ID:
 API_URL = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
 PRODUCTS_FILE = "products.json"
 
-# === ИНИЦИАЛИЗАЦИЯ ===
+# === ИНИЦИАЛИЗАЦИЯ FastAPI ===
 limiter = Limiter(key_func=get_remote_address)
 app = FastAPI()
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
+# === CORS (для фронтенда) ===
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173",       # для локальной разработки
-        "https://store-ma.netlify.app",         # для размещения на netlify
-        ],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -58,19 +57,26 @@ class Product(BaseModel):
     image: str
     discountPercentage: int
 
-# === API ===
+# === API: получение заказа ===
 @app.post("/api/order")
-@limiter.limit("25/minute")  # ⚠️ ограничение: 5 заказов в минуту с одного IP
+@limiter.limit("25/minute")
 async def receive_order(order: Order, request: Request):
     if not order.cart:
         raise HTTPException(status_code=400, detail="Корзина пуста")
 
-    text = f"🛒 *Новый заказ!*\n\n👤 Имя: {order.name}\n📞 Телефон: {order.phone}\n📍 Адрес: {order.address}\n\n📦 Товары:\n"
+    text = (
+        f"🛒 Новый заказ!\n\n"
+        f"👤 Имя: {order.name}\n"
+        f"📞 Телефон: {order.phone}\n"
+        f"📍 Адрес: {order.address}\n\n"
+        f"📦 Товары:\n"
+    )
     for item in order.cart:
         total = item.price * item.amount
         text += f"• {item.title} x{item.amount} = {total} сум\n"
     text += "\n✅ Заказ принят."
 
+    # Отправка в Telegram
     response = requests.post(API_URL, json={
         "chat_id": GROUP_ID,
         "text": text,
@@ -78,10 +84,12 @@ async def receive_order(order: Order, request: Request):
     })
 
     if response.status_code != 200:
+        print("Ошибка Telegram:", response.text)
         raise HTTPException(status_code=500, detail="Ошибка при отправке Telegram")
 
     return {"status": "ok"}
 
+# === API: получение товаров ===
 @app.get("/api/products")
 def get_products():
     try:
@@ -90,6 +98,7 @@ def get_products():
     except Exception:
         raise HTTPException(status_code=500, detail="Не удалось загрузить товары")
 
+# === API: обновление товаров ===
 @app.post("/api/products")
 def update_products(products: List[Product]):
     try:
