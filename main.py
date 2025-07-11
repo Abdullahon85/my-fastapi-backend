@@ -9,27 +9,27 @@ from slowapi.errors import RateLimitExceeded
 import requests
 import json
 import os
+import html
 
-# === Загрузка .env ===
+# === Загрузка переменных из .env ===
 load_dotenv()
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 GROUP_ID = os.getenv("GROUP_ID")
-ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "*").split(",")
+ALLOWED_ORIGINS = [origin.strip() for origin in os.getenv("ALLOWED_ORIGINS", "*").split(",")]
+PRODUCTS_FILE = "products.json"
+API_URL = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
 
 if not BOT_TOKEN or not GROUP_ID:
     raise RuntimeError("BOT_TOKEN и GROUP_ID обязательны в .env")
 
-API_URL = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-PRODUCTS_FILE = "products.json"
-
-# === ИНИЦИАЛИЗАЦИЯ FastAPI ===
+# === Инициализация FastAPI ===
 limiter = Limiter(key_func=get_remote_address)
 app = FastAPI()
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-# === CORS (для фронтенда) ===
+# === CORS ===
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
@@ -38,7 +38,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# === МОДЕЛИ ===
+# === Pydantic модели ===
 class CartItem(BaseModel):
     title: str
     price: int
@@ -57,35 +57,41 @@ class Product(BaseModel):
     image: str
     discountPercentage: int
 
-# === API: получение заказа ===
+# === API: оформление заказа ===
 @app.post("/api/order")
 @limiter.limit("25/minute")
 async def receive_order(order: Order, request: Request):
     if not order.cart:
         raise HTTPException(status_code=400, detail="Корзина пуста")
 
-    text = (
-        f"🛒 Новый заказ!\n\n"
-        f"👤 Имя: {order.name}\n"
-        f"📞 Телефон: {order.phone}\n"
-        f"📍 Адрес: {order.address}\n\n"
-        f"📦 Товары:\n"
+    if not order.name.strip() or not order.phone.strip() or not order.address.strip():
+        raise HTTPException(status_code=400, detail="Все поля обязательны")
+
+    def esc(txt):
+        return html.escape(str(txt))
+
+    message = (
+        f"<b>🛒 Новый заказ!</b>\n\n"
+        f"<b>👤 Имя:</b> {esc(order.name)}\n"
+        f"<b>📞 Телефон:</b> {esc(order.phone)}\n"
+        f"<b>📍 Адрес:</b> {esc(order.address)}\n\n"
+        f"<b>📦 Товары:</b>\n"
     )
     for item in order.cart:
         total = item.price * item.amount
-        text += f"• {item.title} x{item.amount} = {total} сум\n"
-    text += "\n✅ Заказ принят."
+        message += f"• {esc(item.title)} x{item.amount} = {total} сум\n"
+    message += "\n✅ Заказ принят."
 
-    # Отправка в Telegram
-    response = requests.post(API_URL, json={
-        "chat_id": GROUP_ID,
-        "text": text,
-        "parse_mode": "Markdown"
-    })
-
-    if response.status_code != 200:
-        print("Ошибка Telegram:", response.text)
-        raise HTTPException(status_code=500, detail="Ошибка при отправке Telegram")
+    try:
+        response = requests.post(API_URL, json={
+            "chat_id": GROUP_ID,
+            "text": message,
+            "parse_mode": "HTML"
+        })
+        response.raise_for_status()
+    except requests.RequestException as e:
+        print("Ошибка Telegram:", e)
+        raise HTTPException(status_code=500, detail="Ошибка при отправке в Telegram")
 
     return {"status": "ok"}
 
