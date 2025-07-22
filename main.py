@@ -13,8 +13,8 @@ import os
 # === Загрузка .env ===
 load_dotenv()
 
-BOT_TOKEN = os.getenv("BOT_TOKEN")
-GROUP_ID = os.getenv("GROUP_ID")
+BOT_TOKEN = os.getenv("7646030184:AAGtNOEUmwAc_cRz2B317Rt7lAC1qWD7Ygo")
+GROUP_ID = os.getenv("-1002836546900")
 ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "*").split(",")
 
 if not BOT_TOKEN or not GROUP_ID:
@@ -46,7 +46,7 @@ class CartItem(BaseModel):
 
 class Order(BaseModel):
     name: str = Field(min_length=2)
-    phone: str = Field(min_length=5)
+    phone: int = Field(min_length=5)
     address: str = Field(min_length=5)
     cart: List[CartItem]
 
@@ -59,8 +59,7 @@ class Product(BaseModel):
 
 # === API: получение заказа ===
 @app.post("/api/order")
-@limiter.limit("25/minute")
-async def receive_order(order: Order, request: Request):
+async def receive_order(order: Order, requests: Request):
     if not order.cart:
         raise HTTPException(status_code=400, detail="Корзина пуста")
 
