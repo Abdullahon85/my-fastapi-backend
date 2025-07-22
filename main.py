@@ -13,8 +13,8 @@ import os
 # === Загрузка .env ===
 load_dotenv()
 
-BOT_TOKEN = os.getenv("7646030184:AAGtNOEUmwAc_cRz2B317Rt7lAC1qWD7Ygo")
-GROUP_ID = os.getenv("-1002836546900")
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+GROUP_ID = os.getenv("GROUP_ID")
 ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "*").split(",")
 
 if not BOT_TOKEN or not GROUP_ID:
@@ -32,7 +32,7 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 # === CORS (для фронтенда) ===
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=['*'],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
